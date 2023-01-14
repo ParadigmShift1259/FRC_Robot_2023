@@ -11,13 +11,13 @@
 
 #include <vector>
 #include <wpi/array.h>
+// #include <frc/kinematics/SwerveModulePosition.h>
+// #include <frc/kinematics/SwerveDriveKinematics.h>
 
 #include <frc/geometry/Pose2d.h>
-#include <frc/geometry/Rotation2d.h>
-#include <frc/kinematics/SwerveDriveKinematics.h>
-#include <frc/kinematics/SwerveModuleState.h>
-#include <frc/kinematics/ChassisSpeeds.h>
-#include <frc/kinematics/SwerveModulePosition.h>
+// #include <frc/geometry/Rotation2d.h>
+// #include <frc/kinematics/SwerveModuleState.h>
+// #include <frc/kinematics/ChassisSpeeds.h>
 #define USE_SWERVE_POSE_ESTIMATOR
 #ifdef USE_SWERVE_POSE_ESTIMATOR
 #include <frc/estimator/SwerveDrivePoseEstimator.h>
@@ -34,16 +34,17 @@ using SwerveOdo = SwerveDriveOdometry<4>;
 #include <units/time.h>
 #include <units/angular_velocity.h>
 #include <units/velocity.h>
+#include <units/length.h>
 
 #include <frc2/command/SubsystemBase.h>
 
 #include <ctre/phoenix/CANifier.h>
 
-#include "common/Util.h"
+// #include "common/Util.h"
 #include "Gyro.h"
 #include "IOdometry.h"
 
-#include "Constants.h"
+// #include "Constants.h"
 
 
 // Uncomment to directly set states to each module
@@ -164,11 +165,18 @@ public:
     void SetVisionMeasurementStdDevs( const wpi::array<double, 3>& visionMeasurementStdDevs) {m_odometry.SetVisionMeasurementStdDevs(visionMeasurementStdDevs); } 
 
     /// The kinematics object converts inputs into 4 individual swerve module turn angle and wheel speeds
-    SwerveDriveKinematics<kNumSwerveModules> kDriveKinematics{
+    SwerveDriveKinematics<kNumSwerveModules> kDriveKinematics { wpi::array<Translation2d, 4>(
         Translation2d( kWheelBase / 2,  kTrackWidth / 2),    // +x, +y FL
         Translation2d( kWheelBase / 2, -kTrackWidth / 2),    // +x, -y FR
         Translation2d(-kWheelBase / 2,  kTrackWidth / 2),    // -x, +y RL
-        Translation2d(-kWheelBase / 2, -kTrackWidth / 2)};   // -x, -y RR
+        Translation2d(-kWheelBase / 2, -kTrackWidth / 2))};   // -x, -y RR
+    
+    
+    wpi::array<SwerveModulePosition, 4> m_swerveDriveArray { m_frontLeft.GetPosition()
+                                                           , m_frontRight.GetPosition()
+                                                           , m_rearLeft.GetPosition()
+                                                           , m_rearRight.GetPosition()
+                                                           };
 
     bool OdoValid();
 

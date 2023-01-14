@@ -25,7 +25,7 @@ void HoodSubsystem::SetServoPosition(double position)
 
 double HoodSubsystem::GetServoPosition() 
 {
-    m_servo.Get();
+    return m_servo.Get();
 }
 
 void HoodSubsystem::SetByDistance(double distHubCenter)

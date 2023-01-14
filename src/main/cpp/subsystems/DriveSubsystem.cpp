@@ -57,18 +57,18 @@ DriveSubsystem::DriveSubsystem(Team1259::Gyro *gyro, IOdometry& odo)
       }
     , m_canifier(kCanifierID)
     , m_gyro(gyro)
+    , m_odo(odo)
 #ifdef USE_SWERVE_POSE_ESTIMATOR
-    , m_odometry{m_gyro->GetHeadingAsRot2d()
+    , m_odometry{kDriveKinematics
+                , m_gyro->GetHeadingAsRot2d()
+                , m_swerveDriveArray
                 , Pose2d()
-                , kDriveKinematics
                 , wpi::array<double, 3>(0.01, 0.01, 0.01)
-                , wpi::array<double, 1>(0.01)
-                , wpi::array<double, 3>(0.05, 0.05, 0.01)}
+                , wpi::array<double, 3>(0.05, 0.05, 0.01)
+                }
 #else
     , m_odometry{kDriveKinematics, m_gyro->GetHeadingAsRot2d(), Pose2d()}
 #endif
-
-    , m_odo(odo)
 {
     #ifdef MANUAL_MODULE_STATES
     SmartDashboard::PutNumber("T_D_MFL", 0);
@@ -127,10 +127,7 @@ void DriveSubsystem::Periodic()
         frc::Pose2d PriorPose = m_odometry.GetEstimatedPosition();
     #endif
     m_odometry.Update(m_gyro->GetHeadingAsRot2d()
-                , m_frontLeft.GetState()
-                , m_frontRight.GetState()
-                , m_rearLeft.GetState()
-                , m_rearRight.GetState());
+                    , m_swerveDriveArray);
 
 //  if (n%10 == 0 && m_enabled) 
 //   printf("t=%.3f Module Speeds: FL=%.2f FR=%.2f RL=%.2f RR=%.2f\n", m_timer.GetFPGATimestamp().to<double>(), m_frontLeft.GetState().speed.to<double>(), m_rearLeft.GetState().speed.to<double>(), m_rearRight.GetState().speed.to<double>(), m_frontRight.GetState().speed.to<double>());
@@ -141,7 +138,7 @@ void DriveSubsystem::Periodic()
     if(!OdoValid()) // Check whether odometry got coruppted
         {
         ResetOdometry(PriorPose); // Restore Prior Pose
-        frc::DataLogManager::Log(fmt::format("Odometry currupted. Resetting to prior pose: x={}, y={}, heading={}", PriorPose.X().to<double>(), PriorPose.Y().to<double>(), PriorPose.Rotation().Degrees().to<double>()));
+        // frc::DataLogManager::Log(fmt::format("Odometry currupted. Resetting to prior pose: x={}, y={}, heading={}", PriorPose.X().to<double>(), PriorPose.Y().to<double>(), PriorPose.Rotation().Degrees().to<double>()));
         }
 #else
     frc::Pose2d pose = m_odometry.GetPose();
@@ -305,7 +302,7 @@ void DriveSubsystem::ResetEncoders()
 
 bool DriveSubsystem::OdoValid()
 {
-    // check for reasonableness becuase sometimes SwerveDrivePoseEstimator diverges, explodes or becomes NaN
+    // check for reasonableness because sometimes SwerveDrivePoseEstimator diverges, explodes or becomes NaN
     if (! (GetPose().X() >= -1_m && GetPose().X() <= VisionConstants::kFieldLength + 1_m)
         && GetPose().Y() >= -1_m && GetPose().Y() <= VisionConstants::kFieldWidth + 1_m)
         m_odoValid = false;
@@ -408,7 +405,7 @@ double DriveSubsystem::PWMToPulseWidth(CANifier::PWMChannel pwmChannel)
 
 void DriveSubsystem::ResetOdometry(Pose2d pose)
 {
-    m_odometry.ResetPosition(pose, m_gyro->GetHeadingAsRot2d());
+    m_odometry.ResetPosition(m_gyro->GetHeadingAsRot2d(), m_swerveDriveArray, pose);
     //m_StateHist.clear();
     m_odoValid = true;
 }

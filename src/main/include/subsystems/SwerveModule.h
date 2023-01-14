@@ -62,11 +62,16 @@ public:
     /// Get the state for the swerve module pod
     /// \return             The state (vector with speed and angle) representig the current module state
     /// @todo Currently GetState uses the absolute angle instead of the relative angle that we should be using
-    SwerveModuleState GetState();
+    frc::SwerveModuleState GetState();
+    
+    /// Get the position for the swerve module pod
+    /// \return             The posistion (distance and angle) representing the current module position
+    /// @todo Currently is a dummy function that returns 0.0 meters as the distance
+    frc::SwerveModulePosition GetPosition();
 
     /// Set the desired state for the swerve module pod
     /// \param state        The state (vector with speed and angle) representing the desired module state
-    void SetDesiredState(SwerveModuleState &state);
+    void SetDesiredState(frc::SwerveModuleState &state);
     /// Resets the drive motor encoders to 0
     void ResetEncoders();
     /// Resync the relative NEO turn encoder to the absolute encoder

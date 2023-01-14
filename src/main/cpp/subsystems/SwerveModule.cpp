@@ -73,6 +73,11 @@ SwerveModuleState SwerveModule::GetState()
     return { CalcMetersPerSec(), Rotation2d(radian_t(m_turnRelativeEncoder.GetPosition()))};
 }
 
+SwerveModulePosition SwerveModule::GetPosition()
+{
+    return { 0.0_m, Rotation2d(radian_t(m_turnRelativeEncoder.GetPosition()))};
+}
+
 void SwerveModule::SetDesiredState(SwerveModuleState &state)
 {
     // Retrieving PID values from SmartDashboard if enabled

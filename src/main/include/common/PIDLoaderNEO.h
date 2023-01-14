@@ -1,9 +1,7 @@
 #pragma once
 
 #include <string>
-
 #include <frc/SmartDashboard/SmartDashboard.h>
-
 #include <rev/CANSparkMax.h>
 
 using namespace std;

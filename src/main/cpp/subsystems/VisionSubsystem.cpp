@@ -80,6 +80,7 @@ void VisionSubsystem::Periodic()
     
 void VisionSubsystem::Work(units::time::second_t timestamp)
 {
+#if 0
     second_t visionTimestamp = Timer::GetFPGATimestamp();
 
     bool bLogInvalid = m_dbgLogInvalid;
@@ -91,7 +92,7 @@ void VisionSubsystem::Work(units::time::second_t timestamp)
     {
         vector<frc::Translation2d> targetVectors;
         auto targets = result.GetTargets();
-        GetVisionTargetCoords(targets, targetVectors);
+        //GetVisionTargetCoords(targets, targetVectors);
 
         m_logNumRawTargets.Append(targetVectors.size());
 
@@ -140,7 +141,7 @@ void VisionSubsystem::Work(units::time::second_t timestamp)
                         m_odometry.SetVisionMeasurementStdDevs(wpi::array<double, 3>(0.05, 0.05, 0.01));
                         m_odometry.AddVisionMeasurement(m_robotvisionPose, m_visionTimestamp);
                         }
-                    // check for reasonableness becuase sometimes SwerveDrivePoseEstimator diverges, explodes or becomes NaN
+                    // check for reasonableness because sometimes SwerveDrivePoseEstimator diverges, explodes or becomes NaN
                     if (!m_odometry.OdoValid())
                     {   
                         // This assumes gyro was properly zeroed previously and is still valid, otherwise odometry coordinates will have arbitrary rotation w.r.t. true field!
@@ -238,25 +239,26 @@ void VisionSubsystem::Work(units::time::second_t timestamp)
     // SmartDashboard::PutNumber("D_V_Distance", distance);
     // SmartDashboard::PutNumber("D_V_Angle", m_horizontalangle);
     SmartDashboard::PutNumber("Wk", (Timer::GetFPGATimestamp() - m_visionTimestamp).to<double>());
+#endif
 }
 
-void VisionSubsystem::GetVisionTargetCoords(wpi::span<const photonlib::PhotonTrackedTarget>& targets, vector<frc::Translation2d>& targetVectors)
-{
-    // Gets camera-relative x,y translations for each vision target
-    for (size_t i = 0; i < targets.size(); i++)
-    {
-        degree_t TargetPitch = degree_t{targets[i].GetPitch()};
-        meter_t range = photonlib::PhotonUtils::CalculateDistanceToTarget(
-            kCameraHeight, kCurrTargetHeight, kCameraPitch, TargetPitch);
-        if ((TargetPitch > units::degree_t{-13}) && (TargetPitch < units::degree_t{24}))
-            targetVectors.push_back(photonlib::PhotonUtils::EstimateCameraToTargetTranslation(range, frc::Rotation2d(degree_t{-targets[i].GetYaw()})));
-        else
-            {
-            // printf("discarded pitch = %f \n", TargetPitch.to<double>());
-            frc::DataLogManager::Log(fmt::format("Discarded target: pitch={}", TargetPitch.to<double>()));
-            }
-    }
-}
+// void VisionSubsystem::GetVisionTargetCoords(std::span<const photonlib::PhotonTrackedTarget>& targets, vector<frc::Translation2d>& targetVectors)
+// {
+//     // Gets camera-relative x,y translations for each vision target
+//     for (size_t i = 0; i < targets.size(); i++)
+//     {
+//         degree_t TargetPitch = degree_t{targets[i].GetPitch()};
+//         meter_t range = photonlib::PhotonUtils::CalculateDistanceToTarget(
+//             kCameraHeight, kCurrTargetHeight, kCameraPitch, TargetPitch);
+//         if ((TargetPitch > units::degree_t{-13}) && (TargetPitch < units::degree_t{24}))
+//             targetVectors.push_back(photonlib::PhotonUtils::EstimateCameraToTargetTranslation(range, frc::Rotation2d(degree_t{-targets[i].GetYaw()})));
+//         else
+//             {
+//             // printf("discarded pitch = %f \n", TargetPitch.to<double>());
+//             frc::DataLogManager::Log(fmt::format("Discarded target: pitch={}", TargetPitch.to<double>()));
+//             }
+//     }
+// }
 
 frc::Translation2d  VisionSubsystem::FindAverageOfTargets(vector<frc::Translation2d>& targetVectors)// TODO make it FindMedianOfTargets
 {
@@ -410,8 +412,10 @@ bool VisionSubsystem::GetValidTarget()
 
 void VisionSubsystem::SetLED(bool on)
 {
+#if 0
     m_led = on;
     camera.SetLEDMode(m_led ? photonlib::LEDMode::kDefault : photonlib::LEDMode::kOff);
+#endif
 }
 
 
@@ -527,6 +531,8 @@ m_enableVisionOdoCorrection = false;
 
 void VisionSubsystem::CamCapture(void)
 {
+#if 0
 camera.TakeInputSnapshot();
 camera.TakeOutputSnapshot();
+#endif
 }

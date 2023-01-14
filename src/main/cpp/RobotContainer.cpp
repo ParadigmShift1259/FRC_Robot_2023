@@ -9,6 +9,8 @@
 #include <frc2/command/button/NetworkButton.h>
 #include <frc2/command/WaitCommand.h>
 #include <frc2/command/ConditionalCommand.h>
+#include <frc/trajectory/Trajectory.h>
+#include <frc/trajectory/TrajectoryConfig.h>
 #include <commands/IntakeDeploy.h>
 
 RobotContainer::RobotContainer()
@@ -135,21 +137,21 @@ void RobotContainer::ConfigPrimaryButtonBindings()
     // Primary
     // Keep the bindings in this order
     // A, B, X, Y, Left Bumper, Right Bumper, Back, Start
-    JoystickButton(&primary, xbox::kA).WhenHeld(&m_turretToPosStop);
-    JoystickButton(&primary, xbox::kB).WhenHeld(m_testServoIfFlagSet);
+    JoystickButton(&primary, xbox::kA).WhileTrue(&m_turretToPosStop);
+    JoystickButton(&primary, xbox::kB).WhileTrue(&m_testServoIfFlagSet);
     // JoystickButton(&primaryController, xbox::kX).WhenPressed(&m_zeroHeading);  REMOVED FOR GAME PLAY!
-    JoystickButton(&primary, xbox::kY).WhenHeld(&m_turretToNegStop);
+    JoystickButton(&primary, xbox::kY).WhileTrue(&m_turretToNegStop);
 
     // Triggers field relative driving
-    JoystickButton(&primary, xbox::kLeftBumper).WhenPressed(&m_setFieldRelative);
-    JoystickButton(&primary, xbox::kLeftBumper).WhenReleased(&m_clearFieldRelative);
+    JoystickButton(&primary, xbox::kLeftBumper).OnTrue(&m_setFieldRelative);
+    JoystickButton(&primary, xbox::kLeftBumper).OnTrue(&m_clearFieldRelative);
 
     // Toggle slow speed driving for strafe shot
-    JoystickButton(&primary, xbox::kRightBumper).WhenPressed(&m_toggleMaxDriveSpeed);
+    JoystickButton(&primary, xbox::kRightBumper).OnTrue(&m_toggleMaxDriveSpeed);
  
-    JoystickButton(&primary, xbox::kBack).WhileHeld(&m_climb);
+    JoystickButton(&primary, xbox::kBack).WhileTrue(&m_climb);
 #ifdef CLIMB_TEST_DO_NOT_USE_WITH_RACTHET
-    JoystickButton(&primary, xbox::kStart).WhileHeld(&m_windClimb);
+    JoystickButton(&primary, xbox::kStart).WhileTrue(&m_windClimb);
 
 #endif
 }
@@ -165,40 +167,40 @@ void RobotContainer::ConfigSecondaryButtonBindings()
 
     // Keep the bindings in this order
     // A, B, X, Y, Left Bumper, Right Bumper, Back, Start
-    JoystickButton(&secondary, xbox::kA).WhenPressed(frc2::SequentialCommandGroup(m_resetOneBallFlag, IntakeTransfer(*this, true)));
-    JoystickButton(&secondary, xbox::kB).WhenHeld(IntakeRelease(*this));
-    JoystickButton(&secondary, xbox::kX).WhenPressed(&m_runTransferAndFeeder);
-    JoystickButton(&secondary, xbox::kX).WhenReleased(&m_stopTransferAndFeeder);
-    JoystickButton(&secondary, xbox::kY).WhenPressed(
-        frc2::ConditionalCommand(frc2::SequentialCommandGroup(std::move(HomeTarget( &m_flywheel
-                                                                                    , &m_turret
-                                                                                    , &m_hood
-                                                                                    , m_vision
-                                                                                    , &m_turretready
-                                                                                    , &m_firing
-                                                                                    , &m_finished
-                                                                                    , [this]() { return GetYvelovity(); }))
-#ifdef SAVE
-                                                                , std::move(FireOneBall(&m_transfer)))
-#else
-                                                                , std::move(FireOneBall(*this)))
-#endif
-                              , std::move(Fire( &m_flywheel
-                                              , &m_turret
-                                              , &m_hood
-                                              , &m_transfer
-                                              , m_vision
-                                              , &m_turretready
-                                              , &m_firing
-                                              , &m_finished
-                                              , [this]() { return GetYvelovity(); }
-                                              , TransferConstants::kTimeLaunch))
-                              , [this](){return m_onlyOneBall;})
-    );
-    JoystickButton(&secondary, xbox::kLeftBumper).WhenPressed(&m_turretToCenter);
-    JoystickButton(&secondary, xbox::kRightBumper).WhenPressed(&m_toggleVisionMode);
-    JoystickButton(&secondary, xbox::kBack).WhenHeld(Unjam(&m_transfer, &m_intake));    
-    JoystickButton(&secondary, xbox::kStart).WhenPressed(&m_runCompressor);
+    JoystickButton(&secondary, xbox::kA).OnTrue(&m_runIntake);
+    JoystickButton(&secondary, xbox::kB).WhileTrue(&m_intakeRelease);
+    JoystickButton(&secondary, xbox::kX).OnTrue(&m_runTransferAndFeeder);
+    JoystickButton(&secondary, xbox::kX).OnFalse(&m_stopTransferAndFeeder);
+//     JoystickButton(&secondary, xbox::kY).OnTrue(
+//         frc2::ConditionalCommand(frc2::SequentialCommandGroup(std::move(HomeTarget( &m_flywheel
+//                                                                                     , &m_turret
+//                                                                                     , &m_hood
+//                                                                                     , m_vision
+//                                                                                     , &m_turretready
+//                                                                                     , &m_firing
+//                                                                                     , &m_finished
+//                                                                                     , [this]() { return GetYvelovity(); }))
+// #ifdef SAVE
+//                                                                 , std::move(FireOneBall(&m_transfer)))
+// #else
+//                                                                 , std::move(FireOneBall(*this)))
+// #endif
+//                               , std::move(Fire( &m_flywheel
+//                                               , &m_turret
+//                                               , &m_hood
+//                                               , &m_transfer
+//                                               , m_vision
+//                                               , &m_turretready
+//                                               , &m_firing
+//                                               , &m_finished
+//                                               , [this]() { return GetYvelovity(); }
+//                                               , TransferConstants::kTimeLaunch))
+//                               , [this](){return m_onlyOneBall;})
+//     );
+    JoystickButton(&secondary, xbox::kLeftBumper).OnTrue(&m_turretToCenter);
+    JoystickButton(&secondary, xbox::kRightBumper).OnTrue(&m_toggleVisionMode);
+    JoystickButton(&secondary, xbox::kBack).WhileTrue(&m_unjam);    
+    JoystickButton(&secondary, xbox::kStart).OnTrue(&m_runCompressor);
 }
 
 const units::meters_per_second_t zeroMps{0.0};
@@ -289,8 +291,8 @@ frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
     Pose2d(100_in, 179_in, -54_deg)
     };
 
-
-    auto config = TrajectoryConfig{units::velocity::meters_per_second_t{3.5}, AutoConstants::kMaxAcceleration};
+#if 0
+    auto config = frc::TrajectoryConfig{units::velocity::meters_per_second_t{3.5}, AutoConstants::kMaxAcceleration};
     config.SetKinematics(m_drive.kDriveKinematics);    
     // Trajectory straightLine50ftTraj = frc::TrajectoryGenerator::GenerateTrajectory(straightLineWaypoints, config);
     Trajectory ball1Traj = frc::TrajectoryGenerator::GenerateTrajectory(ball1PickupAndShootWaypoints[0], {}, ball1PickupAndShootWaypoints[1], config);
@@ -385,12 +387,14 @@ frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
         default:
             return new frc2::InstantCommand([this]() { ZeroDrive(); }, {&m_drive});
     }
+#endif
+    return new frc2::InstantCommand([this]() { ZeroDrive(); }, {&m_drive});
 }
 
 
 
 
-frc2::ParallelRaceGroup* RobotContainer::GetIntakePathCmd(Trajectory trajectory, bool primaryPath)
+frc2::ParallelRaceGroup* RobotContainer::GetIntakePathCmd(frc::Trajectory trajectory, bool primaryPath)
 {
     return new frc2::ParallelRaceGroup
         (
@@ -478,11 +482,7 @@ frc2::SequentialCommandGroup* RobotContainer::GetIntakeAndFirePathCmd(Trajectory
                                                                                     , &m_firing
                                                                                     , &m_finished
                                                                                     , [this]() { return GetYvelovity(); }))
-#ifdef SAVE
-                                                                    , std::move(FireOneBall(&m_transfer)))
-#else
-                                                                    , std::move(FireOneBall(*this)))
-#endif
+                                                              , std::move(FireOneBall(&m_transfer)))
                                  , std::move(Fire( &m_flywheel
                                                  , &m_turret
                                                  , &m_hood
@@ -536,13 +536,13 @@ SwerveCtrlCmd RobotContainer::GetSwerveCommandPath(Trajectory trajectory, bool p
     return swerveControllerCommand;
 }
 
-frc::Trajectory RobotContainer::convertPathToTrajectory(PathPlannerTrajectory path)
+frc::Trajectory RobotContainer::convertPathToTrajectory(pathplanner::PathPlannerTrajectory path)
 {
     std::vector<frc::Trajectory::State> states;
     //double time = 0.0;
     for (double time = 0.0; time < path.getTotalTime().to<double>(); time += 0.02)
     {
-        PathPlannerTrajectory::PathPlannerState state = path.sample(time * 1_s);
+        pathplanner::PathPlannerTrajectory::PathPlannerState state = path.sample(time * 1_s);
         //printf("time %.3f holorot %.3f\n", state.holonomicRotation.Degrees().to<double>());
         states.push_back({
             time * 1_s,

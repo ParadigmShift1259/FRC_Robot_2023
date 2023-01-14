@@ -58,7 +58,7 @@ SwerveControllerCommand2<NumModules>::SwerveControllerCommand2(
     frc::ProfiledPIDController<units::radians> thetaController,
     std::function<frc::Rotation2d()> desiredRotation,
     std::function<void(std::array<frc::SwerveModuleState, NumModules>)> output,
-    wpi::span<Subsystem*> requirements)
+    std::span<Subsystem*> requirements)
     : m_trajectory(std::move(trajectory)),
       m_pose(std::move(pose)),
       m_kinematics(kinematics),
@@ -76,7 +76,7 @@ SwerveControllerCommand2<NumModules>::SwerveControllerCommand2(
     frc2::PIDController xController, frc2::PIDController yController,
     frc::ProfiledPIDController<units::radians> thetaController,
     std::function<void(std::array<frc::SwerveModuleState, NumModules>)> output,
-    wpi::span<Subsystem*> requirements)
+    std::span<Subsystem*> requirements)
     : m_trajectory(std::move(trajectory)),
       m_pose(std::move(pose)),
       m_kinematics(kinematics),

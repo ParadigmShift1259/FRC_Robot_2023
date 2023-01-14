@@ -1,6 +1,5 @@
 #include "common/PIDLoaderNEO.h"
 
-
 PIDLoaderNEO::PIDLoaderNEO(string name, bool adjustable, double p, double i, double d, double iz, double ia)
     : m_name(name)
     , m_adjustable(adjustable)
@@ -50,14 +49,14 @@ void PIDLoaderNEO::LoadFromNetworkTable(SparkMaxPIDController& turnPIDController
     if (!m_adjustable)
         return;
 
-    double p = SmartDashboard::GetNumber("T_" + m_name + "_TP", m_p);
-    double i = SmartDashboard::GetNumber("T_" + m_name + "_TI", m_i);
-    double d = SmartDashboard::GetNumber("T_" + m_name + "_TD", m_d);
-    double iz = SmartDashboard::GetNumber("T_" + m_name + "_TIZone", m_iz);
-    double ia = SmartDashboard::GetNumber("T_" + m_name + "_TIAccum", m_ia);
-    double ff = SmartDashboard::GetNumber("T_" + m_name + "_TFF", m_ff);
-    double max = SmartDashboard::GetNumber("T_" + m_name + "_TMax", m_max);
-    double min = SmartDashboard::GetNumber("T_" + m_name + "_TMin", m_min);
+    double p = frc::SmartDashboard::GetNumber("T_" + m_name + "_TP", m_p);
+    double i = frc::SmartDashboard::GetNumber("T_" + m_name + "_TI", m_i);
+    double d = frc::SmartDashboard::GetNumber("T_" + m_name + "_TD", m_d);
+    double iz = frc::SmartDashboard::GetNumber("T_" + m_name + "_TIZone", m_iz);
+    double ia = frc::SmartDashboard::GetNumber("T_" + m_name + "_TIAccum", m_ia);
+    double ff = frc::SmartDashboard::GetNumber("T_" + m_name + "_TFF", m_ff);
+    double max = frc::SmartDashboard::GetNumber("T_" + m_name + "_TMax", m_max);
+    double min = frc::SmartDashboard::GetNumber("T_" + m_name + "_TMin", m_min);
 
     // if PID coefficients on SmartDashboard have changed, write new values to controller
     if ((p != m_p)) { turnPIDController.SetP(p); m_p = p; }

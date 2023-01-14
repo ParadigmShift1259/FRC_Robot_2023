@@ -12,8 +12,8 @@
 #include <networktables/NetworkTableInstance.h>
 #include <networktables/NetworkTableEntry.h>
 // #include <networktables/EntryListenerFlags.h>
-#include <photonlib/PhotonCamera.h>
-#include <photonlib/PhotonTrackedTarget.h>
+//#include <photonlib/PhotonCamera.h>
+//#include <photonlib/PhotonTrackedTarget.h>
 
 #include <vector>
 
@@ -89,7 +89,7 @@ protected:
     void Work(units::time::second_t ntcallbackTimestamp);
 
 private:    
-    void GetVisionTargetCoords(wpi::span<const photonlib::PhotonTrackedTarget>& targets, vector<frc::Translation2d>& targetVectors);   // TODO targetCoords
+    //void GetVisionTargetCoords(std::span<const photonlib::PhotonTrackedTarget>& targets, vector<frc::Translation2d>& targetVectors);   // TODO targetCoords
     frc::Translation2d FindAverageOfTargets(vector<frc::Translation2d>& targetVectors);
     // TODO make it FindMedianOfTargets
     void FilterTargets(vector<frc::Translation2d>& targetVectors, frc::Translation2d center, meter_t rMax, degree_t angTol);
@@ -104,7 +104,7 @@ private:
     int m_consecNoTargets;
     bool m_validTarget;
     double m_smoothedRange;
-    photonlib::PhotonCamera camera{"gloworm"};
+    //photonlib::PhotonCamera camera{"gloworm"};
     frc::Translation2d m_cameraToHub;
     Pose2d m_robotvisionPose;
     Pose2d m_cameraPose;

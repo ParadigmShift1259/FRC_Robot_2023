@@ -5,6 +5,10 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
+#include <frc2/command/SwerveControllerCommand.h>
+
+using test = frc2::SwerveControllerCommand<4>;
+
 #pragma once
 
 #include <frc/Filesystem.h>
@@ -24,7 +28,7 @@
 #include <frc2/command/RunCommand.h>
 #include <frc2/command/SequentialCommandGroup.h>
 #include <frc2/command/ParallelCommandGroup.h>
-#include <frc2/command/SwerveControllerCommand.h>
+
 #include <frc2/command/ParallelRaceGroup.h>
 
 #include <frc/geometry/Translation2d.h>
@@ -37,7 +41,6 @@
 
 #include "common/Util.h"
 #include "Gyro.h"
-#include "common/SwerveControllerCommand2.h"
 
 #include "IOdometry.h"
 
@@ -62,7 +65,7 @@
 
 #include <pathplanner/lib/PathPlanner.h>
 
-using namespace pathplanner;
+// using namespace pathplanner;
 // using SwerveCtrlCmd = frc2::SwerveControllerCommand2<DriveConstants::kNumSwerveModules>;
 using SwerveCtrlCmd = frc2::SwerveControllerCommand<DriveConstants::kNumSwerveModules>;
 
@@ -86,7 +89,7 @@ public:
     IntakeSubsystem&     GetIntake() override { return m_intake; }
     TransferSubsystem&   GetTransfer() override { return m_transfer; }
     TurretSubsystem&     GetTurret() override { return m_turret; }
-    VisionSubsystem&     GetVision() override { return m_vision; }
+    // VisionSubsystem&     GetVision() override { return m_vision; }
     DriveSubsystem&      GetDrive() { return m_drive; }
     
     bool OnlyOneBall() override { return m_onlyOneBall; }
@@ -120,7 +123,7 @@ private:
     frc2::ParallelRaceGroup* GetIntakePathCmd(Trajectory trajectory, bool primaryPath);
     frc2::SequentialCommandGroup* GetFirePathCmd(Trajectory trajectory, bool primaryPath);
     SwerveCtrlCmd GetSwerveCommandPath(Trajectory trajectory, bool primaryPath);
-    frc::Trajectory convertPathToTrajectory(PathPlannerTrajectory path);
+    frc::Trajectory convertPathToTrajectory(pathplanner::PathPlannerTrajectory path);
     void PrintTrajectory(frc::Trajectory& trajectory);
 
     frc::XboxController m_primaryController{OIConstants::kPrimaryControllerPort};
@@ -168,6 +171,8 @@ private:
     frc2::InstantCommand m_turretToPosStop{[this] { m_turret.TurnTo(TurretConstants::kMaxAngle); }, {&m_turret} };
     frc2::InstantCommand m_turretToNegStop{[this] { m_turret.TurnTo(TurretConstants::kMinAngle); }, {&m_turret} };
     frc2::InstantCommand m_runCompressor{[this] { m_compressor.EnableDigital(); m_bRunningCompressor = true;}, {} };
+    IntakeRelease m_intakeRelease = IntakeRelease(*this);
+    Unjam m_unjam = Unjam(&m_transfer, &m_intake);
     // frc2::InstantCommand m_resetOdoAndGyro{[this] 
     // { 
     //     m_gyro.SetHeading((double)trajectory.InitialPose().Rotation().Degrees()); 
@@ -212,7 +217,8 @@ private:
     };
     frc2::InstantCommand m_setOneBallFlag{[this] { m_onlyOneBall = true; }, {} };
     frc2::InstantCommand m_resetOneBallFlag{[this] { m_onlyOneBall = false; }, {} };
-    
+    frc2::SequentialCommandGroup m_runIntake{m_resetOneBallFlag, IntakeTransfer(*this, true) };
+
     bool m_onlyOneBall = false;    // Used in auto to shoot one ball
     //bool m_hasAutoRun = false;
     bool m_turretready = false;

@@ -14,9 +14,9 @@ wpi::log::DoubleLogEntry logMatchTime;
 
 void Robot::RobotInit()
 {
-  auto CS = CameraServer::GetInstance();
-  CS->StartAutomaticCapture();
-  CS->SetSize(CameraServer::kSize160x120);
+  // auto CS = CameraServer::GetInstance();
+  // CS.StartAutomaticCapture();
+  // CS.SetSize(CameraServer::kSize160x120);
 
   wpi::log::DataLog& log = DataLogManager::GetLog();
   logMatchTime = wpi::log::DoubleLogEntry(log, "/robot/matchTime");
@@ -57,8 +57,8 @@ void Robot::DisabledPeriodic() {}
  */
 void Robot::AutonomousInit()
 {
-  m_container.GetVision().DisableOdoCorrection();
-  m_container.GetVision().SetTargetingMode(VisionSubsystem::TargetingMode::kPureVision);
+  // m_container.GetVision().DisableOdoCorrection();
+  // m_container.GetVision().SetTargetingMode(VisionSubsystem::TargetingMode::kPureVision);
   m_container.TurretSetZeroAngle();
   m_hasAutoRun = true;
 
@@ -96,8 +96,8 @@ void Robot::TeleopInit()
 // SupplyCurrentLimitConfiguration supplyLimit { true, kMotorCurrentLimit, kMotorCurrentLimit, 2 };
 // m_container.GetDrive().m_frontLeft.m_driveMotor.ConfigSupplyCurrentLimit(supplyLimit);
 
-  m_container.GetVision().SetTargetingMode(VisionSubsystem::TargetingMode::kOdometry);
-  m_container.GetVision().EnableOdoCorrection();
+  // m_container.GetVision().SetTargetingMode(VisionSubsystem::TargetingMode::kOdometry);
+  // m_container.GetVision().EnableOdoCorrection();
 
   //Shuffleboard::SetRecordingFileNameFormat("Team1259NetTblData${date}_${time}");
   //Shuffleboard::StartRecording();
