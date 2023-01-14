@@ -10,19 +10,20 @@
 #include <frc/controller/PIDController.h>
 #include <frc/controller/ProfiledPIDController.h>
 #include <frc/geometry/Rotation2d.h>
+#include <frc/kinematics/SwerveDriveKinematics.h>
 #include <frc/kinematics/SwerveModuleState.h>
+#include <frc/kinematics/ChassisSpeeds.h>
+#include <frc/kinematics/SwerveModulePosition.h>
 #include <frc/trajectory/TrapezoidProfile.h>
 #include <frc/SmartDashboard/SmartDashboard.h>
 #include <frc/Timer.h>
-#include <networktables/NetworkTableEntry.h>
-#include <numbers>
 
-#include <rev\CANSparkMax.h>
+#include <networktables/NetworkTableEntry.h>
+
+#include <rev/CANSparkMax.h>
 
 #include <ctre/phoenix/motorcontrol/can/TalonFX.h>
 #include <ctre/phoenix/motorcontrol/StatorCurrentLimitConfiguration.h>
-
-#include <string>
 
 #include "Constants.h"
 #include "common/Util.h"
@@ -45,7 +46,7 @@ using GetPulseWidthCallback = function<double (CANifier::PWMChannel)>;
 
 class SwerveModule
 {
-    using radians_per_second_squared_t = compound_unit<radians, inverse<squared<second>>>;
+    using radians_per_second_squared_t = compound_unit<radians, units::inverse<squared<second>>>;
 
 public:
     SwerveModule( int driveMotorChannel
@@ -71,7 +72,7 @@ public:
     /// Resync the relative NEO turn encoder to the absolute encoder
     void ResetRelativeToAbsolute();
 
-TalonFX m_driveMotor; // made public just to allow trial change of current limit from Robot teleopinit
+    TalonFX m_driveMotor; // made public just to allow trial change of current limit from Robot teleopinit
  
 private:
     /// Calculate the absolute angle, in radians, based on the pulse widths from @ref m_pulseWidthCallback

@@ -7,12 +7,17 @@
 
 #pragma once
 
-#include <frc/Encoder.h>
+#include "SwerveModule.h"
+
+#include <vector>
+#include <wpi/array.h>
+
 #include <frc/geometry/Pose2d.h>
 #include <frc/geometry/Rotation2d.h>
-#include <frc/kinematics/ChassisSpeeds.h>
 #include <frc/kinematics/SwerveDriveKinematics.h>
-
+#include <frc/kinematics/SwerveModuleState.h>
+#include <frc/kinematics/ChassisSpeeds.h>
+#include <frc/kinematics/SwerveModulePosition.h>
 #define USE_SWERVE_POSE_ESTIMATOR
 #ifdef USE_SWERVE_POSE_ESTIMATOR
 #include <frc/estimator/SwerveDrivePoseEstimator.h>
@@ -22,7 +27,14 @@ using SwerveOdo = frc::SwerveDrivePoseEstimator<4>;
 using SwerveOdo = SwerveDriveOdometry<4>;
 #endif
 
+#include <frc/trajectory/Trajectory.h>
 #include <frc/SmartDashBoard/SmartDashboard.h>
+#include <frc/Encoder.h>
+
+#include <units/time.h>
+#include <units/angular_velocity.h>
+#include <units/velocity.h>
+
 #include <frc2/command/SubsystemBase.h>
 
 #include <ctre/phoenix/CANifier.h>
@@ -32,9 +44,7 @@ using SwerveOdo = SwerveDriveOdometry<4>;
 #include "IOdometry.h"
 
 #include "Constants.h"
-#include "SwerveModule.h"
-#include <vector>
-#include <frc/trajectory/Trajectory.h>
+
 
 // Uncomment to directly set states to each module
 //#define MANUAL_MODULE_STATES
@@ -42,9 +52,9 @@ using SwerveOdo = SwerveDriveOdometry<4>;
 //#define TUNE_ROTATION_DRIVE
 
 using namespace ctre::phoenix;
-using namespace DriveConstants;
-using namespace std;
-using namespace frc;
+// using namespace DriveConstants;
+// using namespace std;
+// using namespace frc;
 
 class DriveSubsystem : public frc2::SubsystemBase
 {
@@ -58,6 +68,7 @@ public:
     };
 
     DriveSubsystem(Team1259::Gyro *gyro, IOdometry& odo);
+    ~DriveSubsystem() noexcept {};
 
     /// Will be called periodically whenever the CommandScheduler runs.
     void Periodic() override;
@@ -112,7 +123,8 @@ public:
     void ResetEncoders();
 
     /// Readable alias for array of swerve modules
-    using SwerveModuleStates = wpi::array<SwerveModuleState, DriveConstants::kNumSwerveModules>;
+    // using SwerveModuleStates = wpi::array<frc::SwerveModuleState, DriveConstants::kNumSwerveModules>;
+    using SwerveModuleStates = wpi::array<frc::SwerveModuleState, DriveConstants::kNumSwerveModules>;
     /// Sets the drive SpeedControllers to a power from -1 to 1.
     void SetModuleStates(SwerveModuleStates desiredStates);
 
@@ -213,6 +225,8 @@ private:
     double m_acceleration;
     meters_per_second_t m_maxDriveSpeed { kDriveSpeed };
     meters_per_second_t m_yVelocity {0.0};
+
+    // wpi::array<SwerveModulePosition, 4> = // TODO
 
     wpi::log::DoubleLogEntry m_logRobotPoseX;
     wpi::log::DoubleLogEntry m_logRobotPoseY;

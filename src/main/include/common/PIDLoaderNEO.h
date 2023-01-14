@@ -1,15 +1,13 @@
 #pragma once
 
-#include <rev/CANSparkMax.h>
+#include <string>
 
 #include <frc/SmartDashboard/SmartDashboard.h>
 
-#include <string>
+#include <rev/CANSparkMax.h>
 
-using namespace frc;
 using namespace std;
 using namespace rev;
-
 
 class PIDLoaderNEO
 {

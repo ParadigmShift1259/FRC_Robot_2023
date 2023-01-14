@@ -171,7 +171,7 @@ namespace ModuleConstants
 
 namespace AutoConstants
 {
-    using radians_per_second_squared_t = compound_unit<radians, inverse<squared<second>>>;
+    using radians_per_second_squared_t = compound_unit<radians, units::inverse<squared<second>>>;
 
     //constexpr auto kMaxSpeed = meters_per_second_t(2.8);
     constexpr meters_per_second_t kMaxSpeed = meters_per_second_t(3.6); // feet_per_second_t(13.6);

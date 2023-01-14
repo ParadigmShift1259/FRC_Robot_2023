@@ -1,8 +1,8 @@
 #pragma once
 
-#include <ctre/phoenix/motorcontrol/can/TalonFX.h>
-
 #include <string>
+
+#include <ctre/phoenix/motorcontrol/can/TalonFX.h>
 
 using namespace ctre::phoenix::motorcontrol::can;
 using namespace std;
