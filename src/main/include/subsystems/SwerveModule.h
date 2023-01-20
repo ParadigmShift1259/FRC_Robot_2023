@@ -65,7 +65,7 @@ public:
     frc::SwerveModuleState GetState();
     
     /// Get the position for the swerve module pod
-    /// \return             The posistion (distance and angle) representing the current module position
+    /// \return             The position (distance and angle) representing the current module position
     /// @todo Currently is a dummy function that returns 0.0 meters as the distance
     frc::SwerveModulePosition GetPosition();
 
@@ -85,6 +85,9 @@ private:
     /// Calculate the MPS of the drive motor based on its current encoder tick velocity
     /// \return             Meters per second
     meters_per_second_t CalcMetersPerSec();
+    /// Calculate the distance driven by the motor
+    /// \return             Meters
+    meter_t CalcDistanceInMeters();
     /// Calculate drive motor encoder ticks based on the MPS
     /// \param speed        Meters per second
     /// \return             Encoder ticks

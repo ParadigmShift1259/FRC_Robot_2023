@@ -5,10 +5,6 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#include <frc2/command/SwerveControllerCommand.h>
-
-using test = frc2::SwerveControllerCommand<4>;
-
 #pragma once
 
 #include <frc/Filesystem.h>
@@ -21,6 +17,7 @@ using test = frc2::SwerveControllerCommand<4>;
 #include <frc/shuffleboard/Shuffleboard.h>
 #include <frc/smartdashboard/SendableChooser.h>
 
+#include <frc2/command/SwerveControllerCommand.h>
 #include <frc2/command/Command.h>
 #include <frc2/command/button/JoystickButton.h>
 #include <frc2/command/InstantCommand.h>

@@ -107,7 +107,7 @@ void FlywheelSubsystem::SetRPM(double setpoint)
 
 double FlywheelSubsystem::GetRPM()
 {
-    m_flywheelencoder.GetVelocity() * FlywheelConstants::kGearRatio;
+    return m_flywheelencoder.GetVelocity() * FlywheelConstants::kGearRatio;
 }
 
 bool FlywheelSubsystem::IsAtMaintainPID()

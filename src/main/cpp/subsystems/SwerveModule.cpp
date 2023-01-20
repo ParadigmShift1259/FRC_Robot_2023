@@ -15,9 +15,9 @@ SwerveModule::SwerveModule(int driveMotorChannel,
                            bool driveMotorReversed,
                            double offset,
                            const std::string& name)
-    : m_offset(offset)
+    : m_driveMotor(driveMotorChannel)
+    , m_offset(offset)
     , m_name(name)
-    , m_driveMotor(driveMotorChannel)
     , m_turningMotor(turningMotorChannel, CANSparkMax::MotorType::kBrushless)
     , m_drivePIDLoader("SM", kDriveAdjust, kDriveP, kDriveI, kDriveD, kDriveFF)
     , m_turnPIDLoader("SM", kTurnAdjust, kTurnP, kTurnI, kTurnD, kTurnIZ, kTurnIA)
@@ -131,6 +131,12 @@ meters_per_second_t SwerveModule::CalcMetersPerSec()
 {
    double ticksPer100ms = m_driveMotor.GetSelectedSensorVelocity();
    return meters_per_second_t(kDriveEncoderMetersPerSec * ticksPer100ms);
+}
+
+meter_t SwerveModule::CalcDistanceInMeters()
+{
+    double ticks = m_driveMotor.GetSelectedSensorPosition();
+    return meter_t(kDriveMetersPerTick * ticks);
 }
 
 double SwerveModule::CalcTicksPer100Ms(meters_per_second_t speed)

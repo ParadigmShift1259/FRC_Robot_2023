@@ -57,7 +57,6 @@ DriveSubsystem::DriveSubsystem(Team1259::Gyro *gyro, IOdometry& odo)
       }
     , m_canifier(kCanifierID)
     , m_gyro(gyro)
-    , m_odo(odo)
 #ifdef USE_SWERVE_POSE_ESTIMATOR
     , m_odometry{kDriveKinematics
                 , m_gyro->GetHeadingAsRot2d()
@@ -69,6 +68,7 @@ DriveSubsystem::DriveSubsystem(Team1259::Gyro *gyro, IOdometry& odo)
 #else
     , m_odometry{kDriveKinematics, m_gyro->GetHeadingAsRot2d(), Pose2d()}
 #endif
+    , m_odo(odo)
 {
     #ifdef MANUAL_MODULE_STATES
     SmartDashboard::PutNumber("T_D_MFL", 0);

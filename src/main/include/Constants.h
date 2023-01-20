@@ -15,6 +15,7 @@
 #include <units/velocity.h>
 #include <units/acceleration.h>
 #include <units/angular_velocity.h>
+#include <units/length.h>
 
 #include <numbers>
 
@@ -139,6 +140,7 @@ namespace ModuleConstants
     /// Assumes the encoders are directly mounted on the wheel shafts
     /// ticks / 100 ms -> ticks / s -> motor rev / s -> wheel rev / s -> m / s
     constexpr double kDriveEncoderMetersPerSec = kEncoderTicksPerSec / static_cast<double>(kEncoderCPR) / kDriveGearRatio * (kWheelDiameterMeters * std::numbers::pi);
+    constexpr double kDriveMetersPerTick = kWheelDiameterMeters * std::numbers::pi / kEncoderCPR;
 
     constexpr double kTurnEncoderCPR = 4096.0 / kTurnMotorRevsPerWheelRev;    // Mag encoder relative output to SparkMax
 
