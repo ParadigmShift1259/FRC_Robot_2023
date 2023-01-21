@@ -8,7 +8,6 @@
 #pragma once
 #include <frc/Filesystem.h>
 #include <frc/XboxController.h>
-#include <frc/Compressor.h>
 
 #include <frc/controller/PIDController.h>
 #include <frc/controller/ProfiledPIDController.h>
@@ -34,7 +33,6 @@
 
 #include <wpi/fs.h>
 #include <iostream>
-// #include <wpi/Path.h>
 #include <wpi/SmallString.h>
 
 #include <pathplanner/lib/PathPlanner.h>
@@ -46,16 +44,14 @@
 
 #include "ISubsysAccess.h"
 #include "subsystems/DriveSubsystem.h"
-#include "subsystems/FlywheelSubsystem.h"
-#include "subsystems/ClimberSubsystem.h"
 
-#include "commands/TransferFirstBall.h"
-#include "commands/TransferSecondBall.h"
-#include "commands/IntakeTransfer.h"
-#include "commands/IntakeIngest.h"
-#include "commands/Unjam.h"
-#include "commands/IntakeRelease.h"
-#include "commands/Fire.h"
+// #include "commands/TransferFirstBall.h"
+// #include "commands/TransferSecondBall.h"
+// #include "commands/IntakeTransfer.h"
+// #include "commands/IntakeIngest.h"
+// #include "commands/Unjam.h"
+// #include "commands/IntakeRelease.h"
+// #include "commands/Fire.h"
 
 #include "Constants.h"
 
@@ -71,7 +67,6 @@ public:
     void Periodic();
 
     void ZeroDrive();
-    void TurretSetZeroAngle() { m_turret.SetZeroAngle(); }
     void GyroSetZeroHeading() { m_gyro.ZeroHeading(); }
 
     enum EAutoPath {kEx1, kEx2, kEx3, kEx4, kEx5};
@@ -79,32 +74,31 @@ public:
 
     frc::SendableChooser<EAutoPath> m_chooser;
 
-    HoodSubsystem&       GetHood() override { return m_hood; }
-    IntakeSubsystem&     GetIntake() override { return m_intake; }
-    TransferSubsystem&   GetTransfer() override { return m_transfer; }
-    TurretSubsystem&     GetTurret() override { return m_turret; }
+    // HoodSubsystem&       GetHood() override { return m_hood; }
+    // IntakeSubsystem&     GetIntake() override { return m_intake; }
+    // TransferSubsystem&   GetTransfer() override { return m_transfer; }
+    // TurretSubsystem&     GetTurret() override { return m_turret; }
     // VisionSubsystem&     GetVision() override { return m_vision; }
     DriveSubsystem&      GetDrive() { return m_drive; }
     
     bool OnlyOneBall() override { return m_onlyOneBall; }
     void SetOneBallFlag() override {m_onlyOneBall = true;}
-    double GetFlywheelRpm() override { return m_flywheel.GetRPM(); }
+    double GetFlywheelRpm() override { return 0.0; }//m_flywheel.GetRPM(); }
 
     Pose2d GetPose() override { return m_drive.GetPose(); }
     Pose2d GetPose(units::time::second_t timestamp) const override { return m_drive.GetPose(timestamp); }
     StateHist GetState() const override { return m_drive.GetState(); }
     StateHist GetState(units::time::second_t timestamp) const override { return m_drive.GetState(timestamp); }
     const StateHistColl& GetStateHist() const override { return m_drive.GetStateHist(); }
-    units::degree_t GetTurretAngle() override { return units::degree_t(m_turret.GetCurrentAngle()); }
     void ResetOdometry(frc::Pose2d pose) override { m_drive.ResetOdometry(pose); }
-    void AddVisionMeasurement(const Pose2d& visionRobotPose, units::second_t timestamp) override { m_drive.AddVisionMeasurement(visionRobotPose, timestamp);}
-    void SetVisionMeasurementStdDevs( const wpi::array<double, 3>& visionMeasurementStdDevs) override { m_drive.SetVisionMeasurementStdDevs(visionMeasurementStdDevs); }
+    //void AddVisionMeasurement(const Pose2d& visionRobotPose, units::second_t timestamp) override { m_drive.AddVisionMeasurement(visionRobotPose, timestamp);}
+    //void SetVisionMeasurementStdDevs( const wpi::array<double, 3>& visionMeasurementStdDevs) override { m_drive.SetVisionMeasurementStdDevs(visionMeasurementStdDevs); }
 
     //bool HasAutoRun() { return m_hasAutoRun; }
 
     double GetYvelovity() { return m_drive.GetYvelocity().to<double>(); }
     
-    void CloseLogFile() { m_vision.CloseLogFile(); }
+    //void CloseLogFile() { m_vision.CloseLogFile(); }
 
     bool OdoValid() {return m_drive.OdoValid();};
 
@@ -126,14 +120,14 @@ private:
     Team1259::Gyro m_gyro;
     DriveSubsystem m_drive;
     bool m_fieldRelative = true;
-    VisionSubsystem m_vision; 
-    FlywheelSubsystem m_flywheel;
-    frc::Compressor m_compressor;
-    IntakeSubsystem m_intake;
-    TransferSubsystem m_transfer;
-    TurretSubsystem m_turret = TurretSubsystem(&m_gyro);
-    HoodSubsystem m_hood;
-    ClimberSubsystem m_climber;
+    // VisionSubsystem m_vision; 
+    // FlywheelSubsystem m_flywheel;
+    // frc::Compressor m_compressor;
+    // IntakeSubsystem m_intake;
+    // TransferSubsystem m_transfer;
+    // TurretSubsystem m_turret = TurretSubsystem(&m_gyro);
+    // HoodSubsystem m_hood;
+    // ClimberSubsystem m_climber;
 
     frc2::InstantCommand m_setFieldRelative{[this] { m_fieldRelative = true; }, {}};
     frc2::InstantCommand m_clearFieldRelative{[this] { m_fieldRelative = false; }, {}};
@@ -149,24 +143,6 @@ private:
     };
     //frc2::InstantCommand m_zeroHeading{[this] { m_gyro.ZeroHeading(); }, {} };
     //frc2::InstantCommand m_setTurretZero{[this] { m_turret.SetZeroAngle(); }, {&m_turret} };
-    frc2::InstantCommand m_climb{[this]
-    {
-        m_vision.SetTargetingMode(VisionSubsystem::kOff);
-        m_vision.SetLED(false);
-        m_turret.TurnTo(0.0);
-        m_climber.Run(ClimberConstants::kMotorSpeed); }, {&m_climber}
-    };
-//#define CLIMB_TEST_DO_NOT_USE_WITH_RACTHET
-#ifdef CLIMB_TEST_DO_NOT_USE_WITH_RACTHET
-    frc2::InstantCommand m_windClimb{[this] { m_climber.Run(-1.0 * ClimberConstants::kMotorSpeed); }, {&m_climber} };
-#endif
-    frc2::InstantCommand m_toggleVisionMode{[this] { m_vision.ToggleTargetingMode(); }, {&m_vision} };
-    frc2::InstantCommand m_turretToCenter{[this] { m_turret.TurnTo(0.0); }, {&m_turret} };
-    frc2::InstantCommand m_turretToPosStop{[this] { m_turret.TurnTo(TurretConstants::kMaxAngle); }, {&m_turret} };
-    frc2::InstantCommand m_turretToNegStop{[this] { m_turret.TurnTo(TurretConstants::kMinAngle); }, {&m_turret} };
-    frc2::InstantCommand m_runCompressor{[this] { m_compressor.EnableDigital(); m_bRunningCompressor = true;}, {} };
-    IntakeRelease m_intakeRelease = IntakeRelease(*this);
-    Unjam m_unjam = Unjam(&m_transfer, &m_intake);
     // frc2::InstantCommand m_resetOdoAndGyro{[this] 
     // { 
     //     m_gyro.SetHeading((double)trajectory.InitialPose().Rotation().Degrees()); 
@@ -181,37 +157,8 @@ private:
     { [this]
         { m_drive.Drive(units::meters_per_second_t(0.0), units::meters_per_second_t(0.0),units::angular_velocity::radians_per_second_t(-0.1), m_fieldRelative); }, {&m_drive} 
     };
-    frc2::InstantCommand m_runTransferAndFeeder
-    { [this]
-        { 
-            m_transfer.SetFeeder(0.5);
-            m_transfer.SetTransfer(0.5);
-        },
-        {&m_transfer}
-    };
-    frc2::InstantCommand m_stopTransferAndFeeder
-    { [this]
-        { 
-            m_transfer.SetFeeder(0.0);
-            m_transfer.SetTransfer(0.0);
-        },
-        {&m_transfer}
-    };
-    frc2::InstantCommand m_testServoIfFlagSet
-    { [this]
-        { 
-            m_hood.SetTestOverrideFlag(m_dbgSeroTest);
-            if (m_dbgSeroTest)
-            {
-                auto s = SmartDashboard::GetNumber("servo override", 0.0);
-                m_hood.SetServoPosition(s);
-            }
-        },
-        {&m_hood}
-    };
     frc2::InstantCommand m_setOneBallFlag{[this] { m_onlyOneBall = true; }, {} };
     frc2::InstantCommand m_resetOneBallFlag{[this] { m_onlyOneBall = false; }, {} };
-    frc2::SequentialCommandGroup m_runIntake{m_resetOneBallFlag, IntakeTransfer(*this, true) };
 
     bool m_onlyOneBall = false;    // Used in auto to shoot one ball
     //bool m_hasAutoRun = false;
@@ -223,6 +170,6 @@ private:
 
     radians_per_second_t m_maxRotSpeed { kDriveAngularSpeed };
 
-    DebugFlag   m_dbgSeroTest{"ServoTest", false};
-    DebugFlag   m_dbgContinousFlywheel{"ContinousFlywheel", true};
+    // DebugFlag   m_dbgSeroTest{"ServoTest", false};
+    // DebugFlag   m_dbgContinousFlywheel{"ContinousFlywheel", true};
 };

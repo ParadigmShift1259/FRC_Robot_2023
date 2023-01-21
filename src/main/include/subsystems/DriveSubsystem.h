@@ -161,8 +161,8 @@ public:
 
     const StateHistColl& GetStateHist() const { return m_StateHist; }
 
-    void AddVisionMeasurement(const Pose2d& visionRobotPose, units::second_t timestamp) {m_odometry.AddVisionMeasurement(visionRobotPose, timestamp); }
-    void SetVisionMeasurementStdDevs( const wpi::array<double, 3>& visionMeasurementStdDevs) {m_odometry.SetVisionMeasurementStdDevs(visionMeasurementStdDevs); } 
+    //void AddVisionMeasurement(const Pose2d& visionRobotPose, units::second_t timestamp) {m_odometry.AddVisionMeasurement(visionRobotPose, timestamp); }
+    //void SetVisionMeasurementStdDevs( const wpi::array<double, 3>& visionMeasurementStdDevs) {m_odometry.SetVisionMeasurementStdDevs(visionMeasurementStdDevs); } 
 
     /// The kinematics object converts inputs into 4 individual swerve module turn angle and wheel speeds
     SwerveDriveKinematics<kNumSwerveModules> kDriveKinematics { wpi::array<Translation2d, 4>(
@@ -209,7 +209,7 @@ private:
     ///@}
 
     /// Reads the absolute encoder pulse widths
-    CANifier m_canifier;
+    //CANifier m_canifier;
     /// Gyro to determine field relative driving, from @ref RobotContainer
     Team1259::Gyro *m_gyro;
     /// Odometry class for tracking robot pose

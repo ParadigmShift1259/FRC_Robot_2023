@@ -55,7 +55,7 @@ DriveSubsystem::DriveSubsystem(Team1259::Gyro *gyro, IOdometry& odo)
         , kRearLeftOffset
         , string("RearLeft")
       }
-    , m_canifier(kCanifierID)
+    //, m_canifier(kCanifierID)
     , m_gyro(gyro)
 #ifdef USE_SWERVE_POSE_ESTIMATOR
     , m_odometry{kDriveKinematics
@@ -149,7 +149,7 @@ void DriveSubsystem::Periodic()
 	auto& prevState = m_StateHist.back();
     state.velocity = (pose - prevState.pose).Translation().Norm() / (state.t - prevState.t);
     state.acceleration = (state.velocity - prevState.velocity) / (state.t - prevState.t);
-    state.m_turretAngle = m_odo.GetTurretAngle();
+    //state.m_turretAngle = m_odo.GetTurretAngle();
     m_StateHist.push_back(state);
 
     m_velocity = (double)state.velocity;
@@ -302,12 +302,13 @@ void DriveSubsystem::ResetEncoders()
 
 bool DriveSubsystem::OdoValid()
 {
+    return true;
     // check for reasonableness because sometimes SwerveDrivePoseEstimator diverges, explodes or becomes NaN
-    if (! (GetPose().X() >= -1_m && GetPose().X() <= VisionConstants::kFieldLength + 1_m)
-        && GetPose().Y() >= -1_m && GetPose().Y() <= VisionConstants::kFieldWidth + 1_m)
-        m_odoValid = false;
+    // if (! (GetPose().X() >= -1_m && GetPose().X() <= VisionConstants::kFieldLength + 1_m)
+    //     && GetPose().Y() >= -1_m && GetPose().Y() <= VisionConstants::kFieldWidth + 1_m)
+    //     m_odoValid = false;
 
-    return m_odoValid;
+    // return m_odoValid;
 }
 
 Pose2d DriveSubsystem::GetPose()
@@ -398,9 +399,10 @@ units::meters_per_second_t DriveSubsystem::GetSpeed() const
 
 double DriveSubsystem::PWMToPulseWidth(CANifier::PWMChannel pwmChannel)
 {
-    double dutyCycleAndPeriod[2];
-    m_canifier.GetPWMInput(pwmChannel, dutyCycleAndPeriod);
-    return dutyCycleAndPeriod[0] * dutyCycleAndPeriod[1] / kPulseWidthToZeroOne;
+    return 0.0; // TODO get abs enc from digital IO
+    // double dutyCycleAndPeriod[2];
+    // m_canifier.GetPWMInput(pwmChannel, dutyCycleAndPeriod);
+    // return dutyCycleAndPeriod[0] * dutyCycleAndPeriod[1] / kPulseWidthToZeroOne;
 }
 
 void DriveSubsystem::ResetOdometry(Pose2d pose)

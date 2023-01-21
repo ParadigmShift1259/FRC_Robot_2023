@@ -25,16 +25,16 @@ using namespace ctre::phoenix;
 using namespace units;
 
 /// Uncomment to set button binds for secondary controller to the primary controller
-#define DualJoysticks
+//#define DualJoysticks
 
 namespace DriveConstants
 {
     constexpr int kNumSwerveModules = 4;
 
     /// Distance between centers of left and right wheels on robot
-    constexpr meter_t kTrackWidth = 23.5_in;
+    constexpr meter_t kTrackWidth = 18.5_in;
     /// Distance between centers of front and back wheels on robot
-    constexpr meter_t kWheelBase = 23.5_in;
+    constexpr meter_t kWheelBase = 26.5_in;
 
     /// \name Teleop Drive Constraints
     // constexpr auto kDriveSpeed = meters_per_second_t(1.5);
@@ -48,7 +48,7 @@ namespace DriveConstants
     /// \name CAN bus IDs
     ///@{
     /// CAN IDs for swerve modules
-    constexpr int kCanifierID = 0;                       //!< CANifier CAN ID (for absolute encoder PWM inputs)
+    //constexpr int kCanifierID = 0;                       //!< CANifier CAN ID (for absolute encoder PWM inputs)
     
     constexpr int kFrontLeftDriveMotorPort    = 1;       //!< Front Left Drive CAN ID (TalonFX)   
     constexpr int kFrontLeftTurningMotorPort  = 2;       //!< Front Left Turn CAN ID (SparkMAX)   
@@ -88,21 +88,21 @@ namespace DriveConstants
     // Record values, enter below, then redeploy
     // All gears should face outwards
 
-    // #define OFFSET_CONSTANTS_ZERO // Define this for callbrating the offsets
-    #ifdef OFFSET_CONSTANTS_ZERO
+#define OFFSET_CONSTANTS_ZERO // Define this for callbrating the offsets
+#ifdef OFFSET_CONSTANTS_ZERO
     //============================================LEAVE THESE ZEROES COMMENTED OUT!!!
     constexpr double kFrontLeftOffset   = 0.0;
     constexpr double kFrontRightOffset  = 0.0;
     constexpr double kRearRightOffset   = 0.0;
     constexpr double kRearLeftOffset    = 0.0;
     //===============================================================================
-    #else
+#else
     // Offsets updated on 2022 Feb 21 after Sussex
     constexpr double kFrontLeftOffset   = 1792.0; //1791; 
     constexpr double kFrontRightOffset  = 1655.0;
     constexpr double kRearRightOffset   = 2009.0; //904.0;
     constexpr double kRearLeftOffset    = 2686.0; // 2649.0;
-    #endif
+#endif
 
     // Pulse Width per rotation is not equal for all encoders. Some are 0 - 3865, some are 0 - 4096
     // FL: 4096
@@ -219,215 +219,4 @@ namespace OIConstants
 #else
     constexpr int kSecondaryControllerPort = 0;
 #endif
-}
-
-// Vision Subsystem Constants
-namespace VisionConstants
-{
-    constexpr units::meter_t kHubOffsetRimToCenter = units::foot_t(2.0);  // Duluth was 2.5
-    constexpr units::meter_t kTargetDistIntoHub = units::foot_t(2.0);     // Separate offset from target dist within cone
-
-    // constexpr frc::Translation2d kHubCenter = frc::Translation2d(kFieldLength/2, kFieldWidth/2);
-    // constexpr frc::Translation2d turretCenterToRobotCenter = frc::Translation2d(inch_t{2.25}, inch_t{0});
-    // constexpr frc::Translation2d camToTurretCenter = frc::Translation2d(meter_t{(cos(angleTurret) * inch_t{-12})}, meter_t{(sin(angleTurret) * inch_t{-12})});
- 
-    constexpr int kVisionFailLimit = 5;
-   
-    constexpr inch_t kCameraHeight = inch_t{38};
-    constexpr inch_t kCurrTargetHeight = inch_t{8*12 + 7};
-    constexpr degree_t kCameraPitch = degree_t{24};  // *** FROM CAREFUL EXPIREMENT 18-Mar-22 THIS IS THE BEST VALUE with height of 37"-38"
-
-    constexpr double kMinTargetDistance = 70;
-    constexpr double kMaxTargetDistance = 380;
-
-    constexpr double kMinHoneDistance = 130;
-    constexpr double kMaxHoneDistance = 260;
-
-    constexpr double kRangeSmoothing = 0.7;
-
-    constexpr units::meter_t kFieldLength = 648.0_in;
-    constexpr units::meter_t kFieldWidth = 324.0_in;
-    constexpr units::meter_t kHangarLength = 128.75_in;
-    constexpr units::meter_t kHangarWidth = 116.0_in;
-
-    //constexpr frc::Translation2d kHubCenter = Translation2d(kFieldLength/2, kFieldWidth/2);
-
-    constexpr units::meter_t kVisionTargetDiameter = 53.375_in;
-    constexpr units::meter_t kVisionTargetHeight = 77.5_in;
-
-    constexpr units::meter_t kVisionTargetRadius = kVisionTargetDiameter / 2;
-    constexpr units::meter_t kMaxTargetRadialSpreadPureVision = 2.0 * kVisionTargetRadius;  // distance from average of all vision targets to each target
-    constexpr units::degree_t kMaxTargetAngleSpreadPureVision = 60_deg;  // angle from average of all vision targets to each target
-    constexpr units::meter_t kMaxTargetRadialSpreadOdo = 2.5 * kVisionTargetRadius; // Distance from expected Hub center to vision target
-    constexpr units::degree_t kMaxTargetAngleSpreadOdo = 80_deg;  // Angle from expected Hub center to vision target
-
-    constexpr int kTurretCmdHoldoff = 3
-    ; // 3;
-    constexpr double kTurretCmdP = 0.9;
-    constexpr units::meter_t kMaxTargetRange = 10_m;
-}
-
-// Flywheel Subsystem constants
-namespace FlywheelConstants
-{
-    constexpr int kPrimaryMotorPort = 11;     //!< Flywheel CAN ID (Primary SparkMAX)
-    constexpr int kFollowerMotorPort = 12;            //!< Flywheel CAN ID (Following SparkMAX)
-
-    constexpr double kRampRate = 1.0;
-    // Total error allowed for the flywheel, in RPM
-    constexpr double kAllowedError = 50.0;
-    constexpr double kMaintainPIDError = 300.0;
-
-    // General multiplier added, adjusts for ball conditions and general firing
-    constexpr double kHomingRPMMultiplier = 1.0175;
-    constexpr double kIdleHomingRPMMultiplier = 1.01;
-    // Additional multiplier applied to flywheel speed while firing 
-    // Ensures all ball trajectories are straight
-    constexpr double kFiringRPMMultiplier = 1.01; //TEMP 1.015; //2; //1.035; //1.05;
-
-    // Launch PID values, used to first get to setpoint
-    //constexpr double kP = 0.0002900;
-    //constexpr double kP = 0.3;
-    constexpr double kP = 0.0002; //0.0005;
-//    constexpr double kP = 0.0;
-    //constexpr double kI = 0.003;
-    constexpr double kI = 0.0;
-    constexpr double kD = 0.0;
-
-    // Maintain PID values, used to adjust for error once the robot is shooting
-    constexpr double kMP = 0.002000;
-    constexpr double kMI = 0.00000001;
-    constexpr double kMD = 0.000001;
-
-    constexpr double kMinOut = 0;
-    constexpr double kMaxOut = 1.0;
-
-    // constexpr double kS = 0.26625;  // Characterization should be repeated with 2 Neos
-    // constexpr double kV = 0.12771;
-    // constexpr double kA = 0.031171;
-    constexpr double kS = 0.25701;  // Characterization for 2 Neos 2022 Feb 19
-    constexpr double kV = 0.12024;
-    constexpr double kA = 0.025359;
-
-    // Diameter is in meters
-    constexpr double kWheelDiameter = 0.1016;   // 4 inches
-    constexpr double kSecondsPerMinute = 60;
-    constexpr double kWheelMetersPerRev = kWheelDiameter * std::numbers::pi;
-    // Meters per second to Revolutions per minute
-    constexpr double kMPSPerRPM = kWheelMetersPerRev / kSecondsPerMinute;
-        /// One turn of the Neo is 1.5 turns of the Flywheel
-    constexpr double kGearRatio = 3.0 / 2.0;
-    constexpr double kWheelRevPerMotorRev = kGearRatio;
-
-    /// Use MPSPerRPM to determine the ramp rates, current values are just placeholders
-    constexpr double kIdleRPM = 3400;
-    constexpr double kMaxFlyweelInPeriodic = 5000;
-}
-
-// Intake Subsystem constants
-namespace IntakeConstants
-{
-    constexpr int kMotorPort = 14;   // Intake rollers CAN ID (Talon)
-    constexpr int kMotorReverseConstant = 1;
-    constexpr int kSolenoidPort = 15;
-
-    constexpr double kIngestSpeed = 1.0;
-    constexpr double kReleaseSpeed = -0.80;
-}
-
-namespace TransferConstants
-{
-    constexpr int kFeederCANid = 12;      //!< Feeder CAN ID (TalonSRX)
-    constexpr int kTransferCANid = 11;   //!< Transfer CAN ID (TalonSRX)
-
-    constexpr int kFeederInputChannel = 0;
-    constexpr int kTransferInputChannel = 1;
-
-    constexpr double kFeederSpeedIntaking = 0.5;
-    constexpr double kFeederSpeedFiring = 1.0;
-    constexpr double kTransferSpeedIntaking = 0.7; //0.5; //0.7;
-    constexpr double kTransferSpeedFiring = 0.8;
-
-    // Time to go from 0 to full throttle
-    constexpr double kTransferRampRate = 0.75;
-
-    constexpr double kTimePassed = 0.150;
-    constexpr double kTimeLaunch = 1.50;
-
-    constexpr double kTimeout = 30.0;
-    constexpr bool kTransferInverted = false;
-    constexpr bool kFeederInverted = true;
-}
-
-// Turret Subsystem Constants
-namespace TurretConstants
-{
-    constexpr int kMotorPort = 13;   //!< Turret CAN ID (TalonSRX)
-
-    // TO DO varies considerably based on battery voltage
-    constexpr int kAbsEncoderZero = 2000;
-    constexpr double kCtreTicksPerAbsEncTick = 9752.0 / 3023.0;
-
-    // Empirically measured 9752 motor ticks for 120 degrees of turret swing
-    constexpr int kTicksPerDegree = 9752.0 / 120.0;
-
-    // constexpr double kP = 0.3;
-    // constexpr double kI = 0.001;
-    // constexpr double kD = 10.0;
-    constexpr double kP = 0.5;
-    constexpr double kI = 0.002;
-    constexpr double kD = 0.0;
-    constexpr double kF = 0.3;
-
-    constexpr double kIZone = 100; // ticks per 100ms
-    constexpr int kMotionSCurveStrength = 1;
-
-    constexpr double kNeutralDeadband = 0.06; // Deadband percentage
-    // Max deg per sec is 225
-    constexpr double kMMCruiseVel = 200; // deg per sec 
-    constexpr double kMMAccel = 500; // deg per sec^2
-    constexpr double kMinOut = 0;
-    constexpr double kMaxOut = 1.0; //1.0; //0.900;
-
-    constexpr double kTimeout = 15.0;
-    constexpr double kInverted = true;
-    constexpr double kSensorPhase = true;
-
-    constexpr double kDegreeStopRange = 0.85; //1; //1.35; //0.6; //0.4; //0.5;
-
-    // Offset of origin point of turret angle and robot angle, in degrees. Robot 0 is forward
-    constexpr double kTurretToRobotAngleOffset = 0.0;
-    // Maximum rotation of the turret relative to the turret, in degrees
-    constexpr double kMinAngle = -60.0;
-    constexpr double kMaxAngle = 60.0;
-
-    // initial configured angle of the turret relative to the turret, in degrees
-    constexpr double kStartingPositionDegrees = 0.0;
-}
-
-//Hood Subsystem Constants
-namespace HoodConstants
-{
-    /// PWM Port for hood servo
-    constexpr int kPWMPort = 8;                //!< Hood servo PWM channel
-    constexpr double kTestServoSpeed = 0.14;
-    // Drives from Max to Min, where hood is smallest at 0.85, and greatest at 0.0485
-    constexpr double kMax = 0.9; //0.75;
-    constexpr double kMin = 0.19;
-
-    /// The fixed hood to fire in the trench given very heavy defense
-    constexpr double kTrenchPosition = 0.223;
-}
-
-// Climber Subsystem constants
-namespace ClimberConstants
-{
-    constexpr double kMotorCanId = 15;          // Climber CAN ID TalonSRX
-    constexpr double kMotorReverseConstant = -1;
-    constexpr double kMotorSpeed = 1.0;
-}
-
-namespace CompressorConstans
-{
-    constexpr int kCompressorPort = 1;
 }

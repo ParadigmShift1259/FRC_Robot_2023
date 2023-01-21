@@ -11,21 +11,15 @@
 #include <frc2/command/ConditionalCommand.h>
 #include <frc/trajectory/Trajectory.h>
 #include <frc/trajectory/TrajectoryConfig.h>
-#include <commands/IntakeDeploy.h>
 
 RobotContainer::RobotContainer()
     : m_gyro()
     , m_drive(&m_gyro, *this)
-    , m_vision(&m_gyro, m_turret, m_hood, *this)
-    , m_flywheel()
-    , m_compressor(CompressorConstans::kCompressorPort, frc::PneumaticsModuleType::REVPH)
 {
     m_fieldRelative = false;
-    //m_compressor.Disable();
 
     ConfigureButtonBindings();
     SetDefaultCommands();
-    //SmartDashboard::PutNumber("FireOnedelay", 2.000);
 
     m_chooser.SetDefaultOption("Path 1", EAutoPath::kEx1);
     m_chooser.AddOption("Path 2", EAutoPath::kEx2);
@@ -35,9 +29,6 @@ RobotContainer::RobotContainer()
     frc::SmartDashboard::PutData("Auto Path", &m_chooser);
 
     SmartDashboard::PutNumber("servo override", 0.0);
-
-    SmartDashboard::PutBoolean("SupressFlywheel", false);
-
     SmartDashboard::PutBoolean("LowSpeedDriveing", m_bLowSpeedDriving);
 }
 
@@ -52,22 +43,8 @@ void RobotContainer::Periodic()
     // SmartDashboard::PutData("TransferSS", &m_transfer);
     // SmartDashboard::PutData("TurretSS", &m_turret);
     // SmartDashboard::PutData("VisionSS", &m_vision);
-    SmartDashboard::PutNumber("Hub angle ", m_vision.GetHubAngle());
-    SmartDashboard::PutBoolean("bCompressorFull", !m_compressor.GetPressureSwitchValue());
 
     m_drive.Periodic();
-
-    if (!m_firing && m_vision.GetValidTarget() && m_dbgContinousFlywheel)
-    {
-        // Update the flywheel continuously, with a cap for chasing balls past 17 ft
-        double flywheelprm = std::min(FlywheelConstants::kMaxFlyweelInPeriodic, m_hood.GetFlywheelSpeed());
-        m_flywheel.SetRPM(flywheelprm);
-    }
-
-    // if (!m_compressor.GetPressureSwitchValue() && m_bRunningCompressor)
-    // {
-    //     m_compressor.Disable();
-    // }
 }
 
 void RobotContainer::SetDefaultCommands()
@@ -102,22 +79,6 @@ void RobotContainer::SetDefaultCommands()
         {&m_drive}
     ));
 #endif
-    m_flywheel.SetDefaultCommand(
-        frc2::RunCommand(
-            [this] {
-                if (!m_dbgContinousFlywheel)
-                    m_flywheel.SetRPM(FlywheelConstants::kIdleRPM);
-            }, {&m_flywheel}
-        )
-    );
-
-    m_climber.SetDefaultCommand(
-        frc2::RunCommand(
-            [this] {
-                m_climber.Run(0.0);
-            }, {&m_climber}
-        )
-    );    
 }
 
 void RobotContainer::ConfigureButtonBindings()
@@ -137,10 +98,10 @@ void RobotContainer::ConfigPrimaryButtonBindings()
     // Primary
     // Keep the bindings in this order
     // A, B, X, Y, Left Bumper, Right Bumper, Back, Start
-    JoystickButton(&primary, xbox::kA).WhileTrue(&m_turretToPosStop);
-    JoystickButton(&primary, xbox::kB).WhileTrue(&m_testServoIfFlagSet);
-    // JoystickButton(&primaryController, xbox::kX).WhenPressed(&m_zeroHeading);  REMOVED FOR GAME PLAY!
-    JoystickButton(&primary, xbox::kY).WhileTrue(&m_turretToNegStop);
+    // JoystickButton(&primary, xbox::kA).WhileTrue(&m_turretToPosStop);
+    // JoystickButton(&primary, xbox::kB).WhileTrue(&m_testServoIfFlagSet);
+    // // JoystickButton(&primaryController, xbox::kX).WhenPressed(&m_zeroHeading);  REMOVED FOR GAME PLAY!
+    // JoystickButton(&primary, xbox::kY).WhileTrue(&m_turretToNegStop);
 
     // Triggers field relative driving
     JoystickButton(&primary, xbox::kLeftBumper).OnTrue(&m_setFieldRelative);
@@ -148,29 +109,22 @@ void RobotContainer::ConfigPrimaryButtonBindings()
 
     // Toggle slow speed driving for strafe shot
     JoystickButton(&primary, xbox::kRightBumper).OnTrue(&m_toggleMaxDriveSpeed);
- 
-    JoystickButton(&primary, xbox::kBack).WhileTrue(&m_climb);
-#ifdef CLIMB_TEST_DO_NOT_USE_WITH_RACTHET
-    JoystickButton(&primary, xbox::kStart).WhileTrue(&m_windClimb);
-
-#endif
 }
 
 void RobotContainer::ConfigSecondaryButtonBindings()
 {
-    using namespace frc;
-    using namespace frc2;
-    using namespace TransferConstants;
-    using xbox = frc::XboxController::Button;
+    //using namespace frc;
+    //using namespace frc2;
+    //using xbox = frc::XboxController::Button;
 
-    auto& secondary = m_secondaryController;
+    //auto& secondary = m_secondaryController;
 
     // Keep the bindings in this order
     // A, B, X, Y, Left Bumper, Right Bumper, Back, Start
-    JoystickButton(&secondary, xbox::kA).OnTrue(&m_runIntake);
-    JoystickButton(&secondary, xbox::kB).WhileTrue(&m_intakeRelease);
-    JoystickButton(&secondary, xbox::kX).OnTrue(&m_runTransferAndFeeder);
-    JoystickButton(&secondary, xbox::kX).OnFalse(&m_stopTransferAndFeeder);
+    // JoystickButton(&secondary, xbox::kA).OnTrue(&m_runIntake);
+    // JoystickButton(&secondary, xbox::kB).WhileTrue(&m_intakeRelease);
+    // JoystickButton(&secondary, xbox::kX).OnTrue(&m_runTransferAndFeeder);
+    // JoystickButton(&secondary, xbox::kX).OnFalse(&m_stopTransferAndFeeder);
 //     JoystickButton(&secondary, xbox::kY).OnTrue(
 //         frc2::ConditionalCommand(frc2::SequentialCommandGroup(std::move(HomeTarget( &m_flywheel
 //                                                                                     , &m_turret
@@ -197,10 +151,10 @@ void RobotContainer::ConfigSecondaryButtonBindings()
 //                                               , TransferConstants::kTimeLaunch))
 //                               , [this](){return m_onlyOneBall;})
 //     );
-    JoystickButton(&secondary, xbox::kLeftBumper).OnTrue(&m_turretToCenter);
-    JoystickButton(&secondary, xbox::kRightBumper).OnTrue(&m_toggleVisionMode);
-    JoystickButton(&secondary, xbox::kBack).WhileTrue(&m_unjam);    
-    JoystickButton(&secondary, xbox::kStart).OnTrue(&m_runCompressor);
+    // JoystickButton(&secondary, xbox::kLeftBumper).OnTrue(&m_turretToCenter);
+    // JoystickButton(&secondary, xbox::kRightBumper).OnTrue(&m_toggleVisionMode);
+    // JoystickButton(&secondary, xbox::kBack).WhileTrue(&m_unjam);    
+    // JoystickButton(&secondary, xbox::kStart).OnTrue(&m_runCompressor);
 }
 
 const units::meters_per_second_t zeroMps{0.0};
@@ -394,109 +348,109 @@ frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
 
 
 
-frc2::ParallelRaceGroup* RobotContainer::GetIntakePathCmd(frc::Trajectory trajectory, bool primaryPath)
-{
-    return new frc2::ParallelRaceGroup
-        (
-              std::move(IntakeTransfer(*this, false))
-            , frc2::SequentialCommandGroup
-            (
-                  frc2::InstantCommand([this]() { 
-                      Timer timer;
-                      printf("t=%.3f Started IntakePathCmd ", timer.GetFPGATimestamp().to<double>());
-                      printf("x=%.3f, y=%.3f, theta=%.1f\n", m_drive.GetPose().X().to<double>(), m_drive.GetPose().Y().to<double>(), m_drive.GetPose().Rotation().Degrees().to<double>());
-                      }, {})
-                , std::move(GetSwerveCommandPath(trajectory, primaryPath))
-                , frc2::WaitCommand(0.5_s)
-                //, frc2::InstantCommand([this]() { ZeroDrive(); }, {&m_drive})
-                ,  frc2::InstantCommand([this]() { 
-                      Timer timer;
-                      printf("t=%.3f Finished IntakePathCmd ", timer.GetFPGATimestamp().to<double>());
-                      printf("x=%.3f, y=%.3f, theta=%.1f\n", m_drive.GetPose().X().to<double>(), m_drive.GetPose().Y().to<double>(), m_drive.GetPose().Rotation().Degrees().to<double>());
-                      }, {})
-            )
-        );
-}
+// frc2::ParallelRaceGroup* RobotContainer::GetIntakePathCmd(frc::Trajectory trajectory, bool primaryPath)
+// {
+//     return new frc2::ParallelRaceGroup
+//         (
+//               std::move(IntakeTransfer(*this, false))
+//             , frc2::SequentialCommandGroup
+//             (
+//                   frc2::InstantCommand([this]() { 
+//                       Timer timer;
+//                       printf("t=%.3f Started IntakePathCmd ", timer.GetFPGATimestamp().to<double>());
+//                       printf("x=%.3f, y=%.3f, theta=%.1f\n", m_drive.GetPose().X().to<double>(), m_drive.GetPose().Y().to<double>(), m_drive.GetPose().Rotation().Degrees().to<double>());
+//                       }, {})
+//                 , std::move(GetSwerveCommandPath(trajectory, primaryPath))
+//                 , frc2::WaitCommand(0.5_s)
+//                 //, frc2::InstantCommand([this]() { ZeroDrive(); }, {&m_drive})
+//                 ,  frc2::InstantCommand([this]() { 
+//                       Timer timer;
+//                       printf("t=%.3f Finished IntakePathCmd ", timer.GetFPGATimestamp().to<double>());
+//                       printf("x=%.3f, y=%.3f, theta=%.1f\n", m_drive.GetPose().X().to<double>(), m_drive.GetPose().Y().to<double>(), m_drive.GetPose().Rotation().Degrees().to<double>());
+//                       }, {})
+//             )
+//         );
+// }
 
 
 
 
-frc2::SequentialCommandGroup* RobotContainer::GetFirePathCmd(Trajectory trajectory, bool primaryPath)
-{
-    return new frc2::SequentialCommandGroup
-    (
-        frc2::InstantCommand([this]() { 
-            Timer timer;
-            printf("t=%.3f Started FirePathCmd ", timer.GetFPGATimestamp().to<double>());
-            printf("x=%.3f, y=%.3f, theta=%.1f\n", m_drive.GetPose().X().to<double>(), m_drive.GetPose().Y().to<double>(), m_drive.GetPose().Rotation().Degrees().to<double>());
-            }, {})
+// frc2::SequentialCommandGroup* RobotContainer::GetFirePathCmd(Trajectory trajectory, bool primaryPath)
+// {
+//     return new frc2::SequentialCommandGroup
+//     (
+//         frc2::InstantCommand([this]() { 
+//             Timer timer;
+//             printf("t=%.3f Started FirePathCmd ", timer.GetFPGATimestamp().to<double>());
+//             printf("x=%.3f, y=%.3f, theta=%.1f\n", m_drive.GetPose().X().to<double>(), m_drive.GetPose().Y().to<double>(), m_drive.GetPose().Rotation().Degrees().to<double>());
+//             }, {})
 
-        , std::move(GetSwerveCommandPath(trajectory, primaryPath))
-        , frc2::InstantCommand([this]() { ZeroDrive(); }, {&m_drive})
-        // , frc2::WaitCommand(0.500_s)
-        , frc2::InstantCommand([this]() { printf("Firing!\n"); }, {})
-        , std::move(Fire( &m_flywheel
-                        , &m_turret
-                        , &m_hood
-                        , &m_transfer
-                        , m_vision
-                        , &m_turretready
-                        , &m_firing
-                        , &m_finished
-                        , [this]() { return GetYvelovity(); }
-                        , TransferConstants::kTimeLaunch))
-        , frc2::InstantCommand([this]() { 
-            Timer timer;
-            printf("t=%.3f Finished FirePathCmd ", timer.GetFPGATimestamp().to<double>());
-            printf("x=%.3f, y=%.3f, theta=%.1f\n", m_drive.GetPose().X().to<double>(), m_drive.GetPose().Y().to<double>(), m_drive.GetPose().Rotation().Degrees().to<double>());
-            }, {})
-    );
-}
+//         , std::move(GetSwerveCommandPath(trajectory, primaryPath))
+//         , frc2::InstantCommand([this]() { ZeroDrive(); }, {&m_drive})
+//         // , frc2::WaitCommand(0.500_s)
+//         , frc2::InstantCommand([this]() { printf("Firing!\n"); }, {})
+//         , std::move(Fire( &m_flywheel
+//                         , &m_turret
+//                         , &m_hood
+//                         , &m_transfer
+//                         , m_vision
+//                         , &m_turretready
+//                         , &m_firing
+//                         , &m_finished
+//                         , [this]() { return GetYvelovity(); }
+//                         , TransferConstants::kTimeLaunch))
+//         , frc2::InstantCommand([this]() { 
+//             Timer timer;
+//             printf("t=%.3f Finished FirePathCmd ", timer.GetFPGATimestamp().to<double>());
+//             printf("x=%.3f, y=%.3f, theta=%.1f\n", m_drive.GetPose().X().to<double>(), m_drive.GetPose().Y().to<double>(), m_drive.GetPose().Rotation().Degrees().to<double>());
+//             }, {})
+//     );
+// }
 
 
 
-frc2::SequentialCommandGroup* RobotContainer::GetIntakeAndFirePathCmd(Trajectory trajectory, bool primaryPath)
-{
-    return new frc2::SequentialCommandGroup
-    (
-        frc2::ParallelCommandGroup
-        (
-              std::move(IntakeTransfer(*this, false))
-            , frc2::SequentialCommandGroup
-            (
-                  std::move(GetSwerveCommandPath(trajectory, primaryPath))
-                //, frc2::WaitCommand(0.2_s)
-                , frc2::InstantCommand([this]() { ZeroDrive(); }, {&m_drive})
-            )
-        )
-        // , frc2::WaitCommand(0.500_s)
-        , frc2::InstantCommand([this]() { 
-            printf("Finished IntakeAndFirePathCmd\n");
-            }, {})
+// frc2::SequentialCommandGroup* RobotContainer::GetIntakeAndFirePathCmd(Trajectory trajectory, bool primaryPath)
+// {
+//     return new frc2::SequentialCommandGroup
+//     (
+//         frc2::ParallelCommandGroup
+//         (
+//               std::move(IntakeTransfer(*this, false))
+//             , frc2::SequentialCommandGroup
+//             (
+//                   std::move(GetSwerveCommandPath(trajectory, primaryPath))
+//                 //, frc2::WaitCommand(0.2_s)
+//                 , frc2::InstantCommand([this]() { ZeroDrive(); }, {&m_drive})
+//             )
+//         )
+//         // , frc2::WaitCommand(0.500_s)
+//         , frc2::InstantCommand([this]() { 
+//             printf("Finished IntakeAndFirePathCmd\n");
+//             }, {})
 
-        , frc2::ConditionalCommand(frc2::SequentialCommandGroup(std::move(HomeTarget( &m_flywheel
-                                                                                    , &m_turret
-                                                                                    , &m_hood
-                                                                                    , m_vision
-                                                                                    , &m_turretready
-                                                                                    , &m_firing
-                                                                                    , &m_finished
-                                                                                    , [this]() { return GetYvelovity(); }))
-                                                              , std::move(FireOneBall(&m_transfer)))
-                                 , std::move(Fire( &m_flywheel
-                                                 , &m_turret
-                                                 , &m_hood
-                                                 , &m_transfer
-                                                 , m_vision
-                                                 , &m_turretready
-                                                 , &m_firing
-                                                 , &m_finished
-                                                 , [this]() { return GetYvelovity(); }
-                                                 , TransferConstants::kTimeLaunch))
-                                 , [this](){return m_onlyOneBall;}
-        )
-    );
-}
+//         , frc2::ConditionalCommand(frc2::SequentialCommandGroup(std::move(HomeTarget( &m_flywheel
+//                                                                                     , &m_turret
+//                                                                                     , &m_hood
+//                                                                                     , m_vision
+//                                                                                     , &m_turretready
+//                                                                                     , &m_firing
+//                                                                                     , &m_finished
+//                                                                                     , [this]() { return GetYvelovity(); }))
+//                                                               , std::move(FireOneBall(&m_transfer)))
+//                                  , std::move(Fire( &m_flywheel
+//                                                  , &m_turret
+//                                                  , &m_hood
+//                                                  , &m_transfer
+//                                                  , m_vision
+//                                                  , &m_turretready
+//                                                  , &m_firing
+//                                                  , &m_finished
+//                                                  , [this]() { return GetYvelovity(); }
+//                                                  , TransferConstants::kTimeLaunch))
+//                                  , [this](){return m_onlyOneBall;}
+//         )
+//     );
+// }
 
 SwerveCtrlCmd RobotContainer::GetSwerveCommandPath(Trajectory trajectory, bool primaryPath)
 {
