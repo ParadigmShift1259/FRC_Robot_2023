@@ -9,12 +9,12 @@
 
 #include "SwerveModule.h"
 
-#include <vector>
-#include <wpi/array.h>
+// #include <vector>
+// #include <wpi/array.h>
 // #include <frc/kinematics/SwerveModulePosition.h>
 // #include <frc/kinematics/SwerveDriveKinematics.h>
 
-#include <frc/geometry/Pose2d.h>
+// #include <frc/geometry/Pose2d.h>
 // #include <frc/geometry/Rotation2d.h>
 // #include <frc/kinematics/SwerveModuleState.h>
 // #include <frc/kinematics/ChassisSpeeds.h>
@@ -27,18 +27,18 @@ using SwerveOdo = frc::SwerveDrivePoseEstimator<4>;
 using SwerveOdo = SwerveDriveOdometry<4>;
 #endif
 
-#include <frc/trajectory/Trajectory.h>
-#include <frc/SmartDashBoard/SmartDashboard.h>
-#include <frc/Encoder.h>
+// #include <frc/trajectory/Trajectory.h>
+// #include <frc/SmartDashBoard/SmartDashboard.h>
+// #include <frc/Encoder.h>
 
-#include <units/time.h>
-#include <units/angular_velocity.h>
-#include <units/velocity.h>
+// #include <units/time.h>
+// #include <units/angular_velocity.h>
+// #include <units/velocity.h>
 #include <units/length.h>
 
 #include <frc2/command/SubsystemBase.h>
 
-#include <ctre/phoenix/CANifier.h>
+// #include <ctre/phoenix/CANifier.h>
 
 // #include "common/Util.h"
 #include "Gyro.h"

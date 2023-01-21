@@ -5,7 +5,7 @@
 #include <wpi/array.h>
 
 #include <frc/geometry/Pose2d.h>
-#include <frc/trajectory/Trajectory.h>
+// #include <frc/trajectory/Trajectory.h>
 
 #include <units/time.h>
 

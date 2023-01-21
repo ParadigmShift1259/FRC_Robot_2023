@@ -21,8 +21,8 @@ public:
             && velocity == other.velocity 
             && acceleration == other.acceleration 
             && pose == other.pose 
-            && curvature == other.curvature
-            && m_turretAngle == other.m_turretAngle;
+            && m_turretAngle == other.m_turretAngle
+            && curvature == other.curvature;
     }
 
     /// Checks inequality between this State and another object.

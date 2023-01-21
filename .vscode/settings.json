@@ -20,5 +20,6 @@
     "*.inc": "cpp",
     "array": "cpp",
     "utility": "cpp"
-  }
+  },
+  "C_Cpp.errorSquiggles": "disabled"
 }

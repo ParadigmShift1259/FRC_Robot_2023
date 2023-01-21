@@ -6,7 +6,6 @@
 /*----------------------------------------------------------------------------*/
 
 #pragma once
-
 #include <frc/Filesystem.h>
 #include <frc/XboxController.h>
 #include <frc/Compressor.h>
@@ -16,6 +15,11 @@
 
 #include <frc/shuffleboard/Shuffleboard.h>
 #include <frc/smartdashboard/SendableChooser.h>
+#include <frc/geometry/Translation2d.h>
+
+#include <frc/trajectory/Trajectory.h>
+#include <frc/trajectory/TrajectoryGenerator.h>
+#include <frc/trajectory/TrajectoryUtil.h>
 
 #include <frc2/command/SwerveControllerCommand.h>
 #include <frc2/command/Command.h>
@@ -28,13 +32,12 @@
 
 #include <frc2/command/ParallelRaceGroup.h>
 
-#include <frc/geometry/Translation2d.h>
-
-#include <frc/trajectory/Trajectory.h>
-#include <frc/trajectory/TrajectoryGenerator.h>
-#include <frc/trajectory/TrajectoryUtil.h>
-
 #include <wpi/fs.h>
+#include <iostream>
+// #include <wpi/Path.h>
+#include <wpi/SmallString.h>
+
+#include <pathplanner/lib/PathPlanner.h>
 
 #include "common/Util.h"
 #include "Gyro.h"
@@ -55,12 +58,6 @@
 #include "commands/Fire.h"
 
 #include "Constants.h"
-
-#include <iostream>
-// #include <wpi/Path.h>
-#include <wpi/SmallString.h>
-
-#include <pathplanner/lib/PathPlanner.h>
 
 // using namespace pathplanner;
 // using SwerveCtrlCmd = frc2::SwerveControllerCommand2<DriveConstants::kNumSwerveModules>;
